@@ -17,7 +17,7 @@ namespace EVEMon.Common.Models
     /// Serializable class abstracting an API queries provider and its configuration.
     /// </summary>
     [EnforceUIThreadAffinity]
-    public sealed class APIProvider
+    public class APIProvider
     {
         private static APIProvider s_ccpProvider;
         private static APIProvider s_ccpTestProvider;
@@ -76,7 +76,7 @@ namespace EVEMon.Common.Models
         /// </summary>
         public static APIProvider DefaultProvider
             => s_ccpProvider ??
-               (s_ccpProvider = new APIProvider
+               (s_ccpProvider = new EsiApiProvider
                {
                    Url = new Uri(NetworkConstants.APIBase),
                    Name = "CCP"
@@ -252,7 +252,7 @@ namespace EVEMon.Common.Models
         /// <param name="postData">The http POST data</param>
         /// <param name="transform">The XSL transform to apply, may be null.</param>
         /// <exception cref="System.ArgumentNullException">callback; The callback cannot be null.</exception>
-        private void QueryMethodAsync<T>(Enum method, Action<CCPAPIResult<T>> callback, string postData,
+        protected virtual void QueryMethodAsync<T>(Enum method, Action<CCPAPIResult<T>> callback, string postData,
             XslCompiledTransform transform)
         {
             // Check callback not null
