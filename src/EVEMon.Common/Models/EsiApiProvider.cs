@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Xml.Xsl;
 
 using EVEMon.Common.Models.EsiProviders;
@@ -26,7 +27,11 @@ namespace EVEMon.Common.Models
             }
             else
             {
-                var result = provider.Invoke(postData);
+                // TODO HACK
+                var keyValues = postData.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
+
+                var result = provider.Invoke(keyValues, "ADD THIS THING");
+                callback(result);
             }
         }
     }
