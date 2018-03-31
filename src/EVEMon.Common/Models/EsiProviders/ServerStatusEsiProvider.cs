@@ -31,8 +31,7 @@ namespace EVEMon.Common.Models.EsiProviders
             {
                 Result = new SerializableAPIServerStatus
                 {
-                    //CCPOpen = (!status.Vip).ToString(), //yea a hack because CCPOpen isnt a thing anymore in ESI
-                    CCPOpen = "True", //Yea yea hardcoded
+                    CCPOpen = (!status.Vip).ToString(), //yea a hack because CCPOpen isnt a thing anymore in ESI
                     Players = status.Players.GetValueOrDefault()
                 } 
             };
