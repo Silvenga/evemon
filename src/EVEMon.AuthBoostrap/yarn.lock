@@ -434,21 +434,16 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@types/bootstrap@^3.3.37":
-  version "3.3.37"
-  resolved "https://registry.yarnpkg.com/@types/bootstrap/-/bootstrap-3.3.37.tgz#35a83106cb1131972977cf075a8d95cc05e895b0"
+"@types/bootstrap@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/bootstrap/-/bootstrap-4.0.1.tgz#7eddfc4e56143cfc54de0fba573d9724ec8b2712"
   dependencies:
     "@types/jquery" "*"
+    popper.js "^1.14.1"
 
 "@types/clean-css@*":
   version "3.4.30"
   resolved "https://registry.yarnpkg.com/@types/clean-css/-/clean-css-3.4.30.tgz#0052c136f5248002428e3638b37de4a39818641d"
-
-"@types/clean-webpack-plugin@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@types/clean-webpack-plugin/-/clean-webpack-plugin-0.1.0.tgz#c498a595a4174b0a313ce42de7e52575c122f5a4"
-  dependencies:
-    "@types/webpack" "*"
 
 "@types/html-minifier@*":
   version "3.5.1"
@@ -760,16 +755,6 @@ aurelia-dependency-injection@^1.0.0, aurelia-dependency-injection@^1.2.0:
   dependencies:
     aurelia-metadata "^1.0.0"
     aurelia-pal "^1.0.0"
-
-aurelia-dialog@^1.0.0-rc.2.0.0:
-  version "1.0.0-rc.2.0.0"
-  resolved "https://registry.yarnpkg.com/aurelia-dialog/-/aurelia-dialog-1.0.0-rc.2.0.0.tgz#de863fc21bcde0d3a22f1a13e1a7367e64b0904c"
-  dependencies:
-    aurelia-dependency-injection "^1.0.0"
-    aurelia-framework "^1.0.0"
-    aurelia-metadata "^1.0.0"
-    aurelia-pal "^1.0.0"
-    aurelia-templating "^1.0.0"
 
 aurelia-event-aggregator@^1.0.0:
   version "1.0.1"
@@ -3807,6 +3792,10 @@ pkg-dir@^2.0.0:
 popper.js@^1.12.9:
   version "1.12.9"
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.12.9.tgz#0dfbc2dff96c451bb332edcfcfaaf566d331d5b3"
+
+popper.js@^1.14.1:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.1.tgz#b8815e5cda6f62fc2042e47618649f75866e6753"
 
 portfinder@^1.0.13, portfinder@^1.0.9:
   version "1.0.13"

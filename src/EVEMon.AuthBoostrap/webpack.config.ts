@@ -7,6 +7,8 @@ const outputDirectory = path.resolve(__dirname, 'dist');
 const sourceDirectory = path.resolve(__dirname, 'src');
 const nodeModuleDirectory = path.resolve(__dirname, 'node_modules');
 
+// This is from https://github.com/masterjeef/aurelia-boilerplate
+
 const webpackConfig: webpack.Configuration = {
     entry: 'aurelia-bootstrapper',
     context: path.resolve(__dirname),
