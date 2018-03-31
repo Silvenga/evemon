@@ -1,6 +1,7 @@
 using System;
 using EVEMon.Common.Enumerations;
 using EVEMon.Common.Enumerations.CCPAPI;
+using EVEMon.Common.Extensions;
 using EVEMon.Common.Interfaces;
 using EVEMon.Common.QueryMonitor;
 using EVEMon.Common.Serialization.Eve;
@@ -33,9 +34,7 @@ namespace EVEMon.Common.Models
         /// <summary>
         /// Gets the server's name.
         /// </summary>
-        private static string Name => EveMonClient.APIProviders.CurrentProvider.Url.Host != APIProvider.TestProvider.Url.Host
-            ? "Tranquility"
-            : "Sinqularity";
+        private static string Name => EveMonClient.APIProviders.CurrentProvider.DataSource.ToTitleCase();
 
         /// <summary>
         /// Gets the server status message.

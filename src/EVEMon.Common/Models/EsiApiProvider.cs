@@ -11,6 +11,7 @@ namespace EVEMon.Common.Models
     {
         private readonly EsiProviderRegister _register;
 
+
         public EsiApiProvider()
         {
             _register = new EsiProviderRegister();
@@ -28,9 +29,9 @@ namespace EVEMon.Common.Models
             else
             {
                 // TODO HACK
-                var keyValues = postData.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
+                var keyValues = postData?.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
 
-                var result = provider.Invoke(keyValues, "ADD THIS THING");
+                var result = provider.Invoke(keyValues, DataSource, "ADD THIS THING");
                 callback(result);
             }
         }

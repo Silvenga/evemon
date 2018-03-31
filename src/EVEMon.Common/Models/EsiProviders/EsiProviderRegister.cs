@@ -12,7 +12,8 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             _apiProviders = new List<IEsiProvider>
             {
-                new CharacterInfoEsiProvider()
+                new CharacterInfoEsiProvider(),
+                new ServerStatusEsiProvider()
             };
         }
 

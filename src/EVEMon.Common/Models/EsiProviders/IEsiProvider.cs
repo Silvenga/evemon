@@ -12,6 +12,6 @@ namespace EVEMon.Common.Models.EsiProviders
 
     public interface IEsiProvider<T> : IEsiProvider
     {
-        CCPAPIResult<T> Invoke(Dictionary<string, string> legacyPostData, string accessToken);
+        CCPAPIResult<T> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken);
     }
 }

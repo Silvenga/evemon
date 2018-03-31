@@ -49,6 +49,13 @@ namespace EVEMon.Common.Models
         /// </summary>
         public Uri Url { get; set; }
 
+
+        /// <summary>
+        /// Source of data
+        /// </summary>
+        public string DataSource { get; set; } = "tranquility";
+
+
         /// <summary>
         /// Returns a list of APIMethodsEnum supported by this APIConfiguration.
         /// </summary>
@@ -78,8 +85,8 @@ namespace EVEMon.Common.Models
             => s_ccpProvider ??
                (s_ccpProvider = new EsiApiProvider
                {
-                   Url = new Uri(NetworkConstants.APIBase),
-                   Name = "CCP"
+                   Url = new Uri(NetworkConstants.APIBase), //Not used by the EsiApiProvider but used for backwards compatitbility with the xml api
+                   Name = "CCP ESI Tranquility"
                });
 
         /// <summary>
@@ -87,10 +94,11 @@ namespace EVEMon.Common.Models
         /// </summary>
         public static APIProvider TestProvider
             => s_ccpTestProvider ??
-               (s_ccpTestProvider = new APIProvider
+               (s_ccpTestProvider = new EsiApiProvider
                {
-                   Url = new Uri(NetworkConstants.APITestBase),
-                   Name = "CCP Test API"
+                   Url = new Uri(NetworkConstants.APITestBase), //Not used by the EsiApiProvider but used for backwards compatitbility with the xml api
+                   Name = "CCP ESI Singularity",
+                   DataSource = "singularity"
                });
 
         #endregion

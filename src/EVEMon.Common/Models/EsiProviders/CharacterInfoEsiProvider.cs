@@ -24,7 +24,7 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             var configuration = new Configuration
             {
-                UserAgent = "EveMon - Development"
+                UserAgent = "EveMon - Development",
             };
             _charactorApi = new CharacterApi(configuration);
             _corporationApi = new CorporationApi(configuration);
@@ -32,7 +32,7 @@ namespace EVEMon.Common.Models.EsiProviders
             _universeApi = new UniverseApi(configuration);
         }
 
-        public CCPAPIResult<SerializableAPICharacterInfo> Invoke(Dictionary<string, string> legacyPostData, string accessToken)
+        public CCPAPIResult<SerializableAPICharacterInfo> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)
         {
             var characterId = int.Parse(legacyPostData["characterID"]);
 
@@ -40,53 +40,53 @@ namespace EVEMon.Common.Models.EsiProviders
             {
                 Result = new SerializableAPICharacterInfo
                 {
-                    LastKnownLocation = GetSolarSystem(characterId, accessToken),
-                    SecurityStatus = GetSecurityStatus(characterId),
-                    ShipName = GetShipName(characterId, accessToken),
-                    ShipTypeName = GetShipType(characterId, accessToken)
+                    LastKnownLocation = GetSolarSystem(characterId, dataSource, accessToken),
+                    SecurityStatus = GetSecurityStatus(characterId, dataSource),
+                    ShipName = GetShipName(characterId, dataSource, accessToken),
+                    ShipTypeName = GetShipType(characterId, dataSource, accessToken)
                 }
             };
 
 
             result.Result.EmploymentHistory.Clear();
-            result.Result.EmploymentHistory.AddRange(GetCorperationHistory(characterId));
+            result.Result.EmploymentHistory.AddRange(GetCorperationHistory(characterId, dataSource));
 
             return result;
         }
 
-        private string GetSolarSystem(int characterId, string accessToken)
+        private string GetSolarSystem(int characterId, string dataSource, string accessToken)
         {
-            var location = _locationApi.GetCharactersCharacterIdLocation(characterId, token: accessToken);
-            var solarSystem = _universeApi.GetUniverseSystemsSystemId(location.SolarSystemId);
+            var location = _locationApi.GetCharactersCharacterIdLocation(characterId, dataSource, accessToken);
+            var solarSystem = _universeApi.GetUniverseSystemsSystemId(location.SolarSystemId, dataSource);
 
             return solarSystem.Name;
         }
 
-        private double GetSecurityStatus(int characterId)
+        private double GetSecurityStatus(int characterId, string dataSource)
         {
-            var character = _charactorApi.GetCharactersCharacterId(characterId);
+            var character = _charactorApi.GetCharactersCharacterId(characterId, dataSource);
             return character.SecurityStatus.GetValueOrDefault();
         }
 
-        private string GetShipName(int characterId, string accessToken)
+        private string GetShipName(int characterId, string dataSource, string accessToken)
         {
-            var location = _locationApi.GetCharactersCharacterIdShip(characterId, token: accessToken);
+            var location = _locationApi.GetCharactersCharacterIdShip(characterId, dataSource, accessToken);
             return location.ShipName;
         }
 
-        private string GetShipType(int characterId, string accessToken)
+        private string GetShipType(int characterId, string dataSource, string accessToken)
         {
-            var location = _locationApi.GetCharactersCharacterIdShip(characterId, token: accessToken);
+            var location = _locationApi.GetCharactersCharacterIdShip(characterId, dataSource, accessToken);
             return location.ShipTypeId.ToString(); // TODO
         }
 
-        private IEnumerable<SerializableEmploymentHistoryListItem> GetCorperationHistory(int characterId)
+        private IEnumerable<SerializableEmploymentHistoryListItem> GetCorperationHistory(int characterId, string dataSource)
         {
-            var corpHistory = _charactorApi.GetCharactersCharacterIdCorporationhistory(characterId);
+            var corpHistory = _charactorApi.GetCharactersCharacterIdCorporationhistory(characterId, dataSource);
             var history = corpHistory.Select(x => new SerializableEmploymentHistoryListItem
             {
                 CorporationID = x.CorporationId.GetValueOrDefault(),
-                CorporationName = _corporationApi.GetCorporationsCorporationId(x.CorporationId.GetValueOrDefault()).CorporationName,
+                CorporationName = _corporationApi.GetCorporationsCorporationId(x.CorporationId.GetValueOrDefault(), dataSource).CorporationName,
                 RecordID = x.RecordId.GetValueOrDefault(),
                 StartDate = x.StartDate.GetValueOrDefault(),
 
