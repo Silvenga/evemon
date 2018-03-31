@@ -135,6 +135,7 @@
     <Reference Include="Scientist, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Scientist.1.0.1\lib\net451\Scientist.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -168,8 +169,6 @@
     <Compile Include="AsyncPump.cs" />
     <Compile Include="CloudStorageServices\AuthenticationSteps.cs" />
     <Compile Include="Controls\CustomCursors.cs" />
-    <Compile Include="Entities\Dockable.cs" />
-    <Compile Include="Entities\ServerStatus.cs" />
     <Compile Include="Enumerations\AttributeOptimizationStrategy.cs" />
     <Compile Include="Enumerations\BlinkAction.cs" />
     <Compile Include="Enumerations\UISettings\AssetGrouping.cs" />

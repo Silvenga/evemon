@@ -105,7 +105,6 @@ namespace EVEMon
             this.testCharacterNotificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testTimeoutOneSecToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.restartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugESIEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainToolBar = new System.Windows.Forms.ToolStrip();
             this.addAPIKeyTbMenu = new System.Windows.Forms.ToolStripButton();
             this.apiKeysManagementTbMenu = new System.Windows.Forms.ToolStripButton();
@@ -717,8 +716,7 @@ namespace EVEMon
             this.testNotificationToolStripMenuItem,
             this.testCharacterNotificationToolStripMenuItem,
             this.testTimeoutOneSecToolStripMenuItem,
-            this.restartToolStripMenuItem,
-            this.debugESIEventToolStripMenuItem});
+            this.restartToolStripMenuItem});
             this.testsToolStripMenuItem.Name = "testsToolStripMenuItem";
             this.testsToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
             this.testsToolStripMenuItem.Text = "Te&st";
@@ -766,13 +764,6 @@ namespace EVEMon
             this.restartToolStripMenuItem.Size = new System.Drawing.Size(287, 22);
             this.restartToolStripMenuItem.Text = "Restart";
             this.restartToolStripMenuItem.Click += new System.EventHandler(this.restartToolStripMenuItem_Click);
-            // 
-            // debugESIEventToolStripMenuItem
-            // 
-            this.debugESIEventToolStripMenuItem.Name = "debugESIEventToolStripMenuItem";
-            this.debugESIEventToolStripMenuItem.Size = new System.Drawing.Size(287, 22);
-            this.debugESIEventToolStripMenuItem.Text = "Debug ESI Event";
-            this.debugESIEventToolStripMenuItem.Click += new System.EventHandler(this.debugESIEventToolStripMenuItem_Click);
             // 
             // mainToolBar
             // 
@@ -1322,6 +1313,5 @@ namespace EVEMon
         private System.Windows.Forms.ToolStripMenuItem showOwnedSkillbooksMenuItem;
         private System.Windows.Forms.ToolStripSeparator secondSeparator;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem debugESIEventToolStripMenuItem;
     }
 }
