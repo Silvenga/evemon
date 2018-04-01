@@ -13,7 +13,8 @@ namespace EVEMon.Common.Models.EsiProviders
             _apiProviders = new List<IEsiProvider>
             {
                 new CharacterInfoEsiProvider(),
-                new ServerStatusEsiProvider()
+                new ServerStatusEsiProvider(),
+                //new ConquerableStationListEsiProvider() //Commented out for now because its working but not returning all data (too slow)
             };
         }
 

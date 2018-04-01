@@ -53,8 +53,21 @@ namespace EVEMon.Common.Models.EsiProviders
         private string GetSolarSystem(int characterId, string dataSource, string accessToken)
         {
             var location = _locationApi.GetCharactersCharacterIdLocation(characterId, dataSource, accessToken);
-            var solarSystem = _universeApi.GetUniverseSystemsSystemId(location.SolarSystemId, dataSource);
+            //Handle that these are optional
+            if (location.StructureId.HasValue)
+            {
+                var structure = _universeApi.GetUniverseStructuresStructureId(location.StructureId.Value, dataSource);
+                return structure.Name;
+            }
 
+            if(location.StationId.HasValue)
+            {
+                var station = _universeApi.GetUniverseStationsStationId(location.StationId.Value, dataSource);
+                return station.Name;
+            }
+
+            var solarSystem = _universeApi.GetUniverseSystemsSystemId(location.SolarSystemId, dataSource);
+    
             return solarSystem.Name;
         }
 
