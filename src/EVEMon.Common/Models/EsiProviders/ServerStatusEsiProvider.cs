@@ -16,11 +16,7 @@ namespace EVEMon.Common.Models.EsiProviders
 
         public ServerStatusEsiProvider()
         {
-            var configuration = new Configuration
-            {
-                UserAgent = "EveMon - Development",
-            };
-            _statusApi = new StatusApi(configuration);
+            _statusApi = new StatusApi();
         }
 
         public CCPAPIResult<SerializableAPIServerStatus> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)

@@ -15,6 +15,7 @@ using EVEMon.Common.Models;
 using EVEMon.Common.Models.Extended;
 using EVEMon.Common.Net;
 using EVEMon.Common.Threading;
+using IO.Swagger.Client;
 
 namespace EVEMon.Common
 {
@@ -55,6 +56,13 @@ namespace EVEMon.Common
 
             // Network monitoring (connection availability changes)
             NetworkMonitor.Initialize();
+
+            //Set swagger global config
+            Configuration.Default = new Configuration
+            {
+                BasePath = "https://esi.tech.ccp.is/",
+                UserAgent = "EveMon - Development",
+            };
 
             // APIMethods collection initialization (always before members instatiation)
             APIMethods.Initialize();

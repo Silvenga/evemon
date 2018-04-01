@@ -22,14 +22,10 @@ namespace EVEMon.Common.Models.EsiProviders
 
         public CharacterInfoEsiProvider()
         {
-            var configuration = new Configuration
-            {
-                UserAgent = "EveMon - Development",
-            };
-            _charactorApi = new CharacterApi(configuration);
-            _corporationApi = new CorporationApi(configuration);
-            _locationApi = new LocationApi(configuration);
-            _universeApi = new UniverseApi(configuration);
+            _charactorApi = new CharacterApi();
+            _corporationApi = new CorporationApi();
+            _locationApi = new LocationApi();
+            _universeApi = new UniverseApi();
         }
 
         public CCPAPIResult<SerializableAPICharacterInfo> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)
