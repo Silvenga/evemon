@@ -6,7 +6,6 @@ using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Serialization.Eve;
 
 using IO.Swagger.Api;
-using IO.Swagger.Client;
 using IO.Swagger.Model;
 
 namespace EVEMon.Common.Models.EsiProviders

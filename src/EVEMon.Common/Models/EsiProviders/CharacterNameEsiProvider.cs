@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using EVEMon.Common.Collections;
 using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Serialization.Eve;
 
 using IO.Swagger.Api;
-using IO.Swagger.Client;
 using IO.Swagger.Model;
 
 namespace EVEMon.Common.Models.EsiProviders
