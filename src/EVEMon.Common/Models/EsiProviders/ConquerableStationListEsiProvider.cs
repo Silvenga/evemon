@@ -7,6 +7,7 @@ using EVEMon.Common.Serialization.Eve;
 
 using IO.Swagger.Api;
 using IO.Swagger.Client;
+using IO.Swagger.Model;
 
 namespace EVEMon.Common.Models.EsiProviders
 {
@@ -14,7 +15,6 @@ namespace EVEMon.Common.Models.EsiProviders
     {
         private readonly ISovereigntyApi _sovereigntyApi;
         private readonly IUniverseApi _universeApi;
-        private readonly ICorporationApi _corporationApi;
 
         public Enum Provides { get; } = CCPAPIGenericMethods.ConquerableStationList;
 
@@ -22,7 +22,6 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             _sovereigntyApi = new SovereigntyApi();
             _universeApi = new UniverseApi();
-            _corporationApi = new CorporationApi();
 
         }
 
@@ -46,36 +45,50 @@ namespace EVEMon.Common.Models.EsiProviders
             //TODO: be not hard coded, I hope its complete
             var outpostTypeIds = new List<int> { 21646, 21645, 21644, 21642, 12242, 12294, 12295 };
 
-            var outpostSovStructures = sovStructures.Where(x => outpostTypeIds.Contains(x.StructureTypeId.GetValueOrDefault()));
+            var outpostSovStructures = sovStructures.Where(x => outpostTypeIds.Contains(x.StructureTypeId.GetValueOrDefault())).ToList();
 
-            var outposts = new List<SerializableOutpost>();
-            foreach (var outpost in outpostSovStructures)
+            var outpostIds = outpostSovStructures.Select(x => (int?) x.StructureId).ToList();
+
+            var outpostNames = GetOutpostNames(outpostIds, dataSource);
+
+            var outposts = outpostSovStructures.Select(x => new SerializableOutpost
             {
+                //TODO: handle corp or alliance
+
                 //Below parts are commented out because we making 2k calls to replicate this endpoint, its slow and painful
-                //We need a centralized cache, or lazy load
+                //We only get alliance id not corp id from the sov endpoint
 
-                //bleh casts
-                //var outpostDetails = _universeApi.GetUniverseStationsStationId((int?) outpost.StructureId.GetValueOrDefault(), dataSource);
-
-                var o = new SerializableOutpost
-                {
-                    //CorporationID = outpostDetails.Owner.GetValueOrDefault(),
-                    //CorporationName =
-                    //    _corporationApi
-                    //        .GetCorporationsCorporationId(outpostDetails.Owner.GetValueOrDefault(), dataSource)
-                    //        .CorporationName,
-                    SolarSystemID = outpost.SolarSystemId.GetValueOrDefault(),
-                    StationID = outpost.StructureId.GetValueOrDefault(),
-                    //StationName = outpostDetails.Name,
-                    StationName = outpost.StructureId.GetValueOrDefault().ToString(), //TODO use real name
-                    StationTypeID = outpost.StructureTypeId.GetValueOrDefault(),
-                    
-                };
-
-                outposts.Add(o);
-            }
+                //CorporationID = outpostDetails.Owner.GetValueOrDefault(),
+                //CorporationName =
+                //    _corporationApi
+                //        .GetCorporationsCorporationId(outpostDetails.Owner.GetValueOrDefault(), dataSource)
+                //        .CorporationName,
+                SolarSystemID = x.SolarSystemId.GetValueOrDefault(),
+                StationID = x.StructureId.GetValueOrDefault(),
+                StationName = outpostNames[(int) x.StructureId.GetValueOrDefault()],
+                StationTypeID = x.StructureTypeId.GetValueOrDefault(),
+            });
 
             return outposts;
+        }
+
+        private Dictionary<int, string> GetOutpostNames(List<int?> outpostIds, string dataSource)
+        {
+            //Endpoint maxes out at 1k ids passed
+            var chunkedIds = outpostIds.ChunkBy(1000);
+
+            //TODO: dont like using swaggger classes
+            var outpostNames = new List<PostUniverseNames200Ok>();
+
+            foreach (var chunk in chunkedIds)
+            {
+                var namesResult = _universeApi.PostUniverseNames(chunk, dataSource);
+
+                outpostNames.AddRange(namesResult);
+            }
+
+            return outpostNames.Where(x => x.Category == PostUniverseNames200Ok.CategoryEnum.Station).ToDictionary(x => x.Id.GetValueOrDefault(), x => x.Name);
+
         }
     }
 }
