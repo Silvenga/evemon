@@ -72,22 +72,25 @@ namespace EVEMon.Common.Models.EsiProviders
             return outposts;
         }
 
-        private Dictionary<int, string> GetOutpostNames(List<int?> outpostIds, string dataSource)
+        private Dictionary<int, string> GetOutpostNames(List<int?> ids, string dataSource)
         {
             //Endpoint maxes out at 1k ids passed
-            var chunkedIds = outpostIds.ChunkBy(1000);
+            var chunkedIds = ids.ChunkBy(1000);
 
             //TODO: dont like using swaggger classes
-            var outpostNames = new List<PostUniverseNames200Ok>();
+            var names = new List<PostUniverseNames200Ok>();
 
             foreach (var chunk in chunkedIds)
             {
                 var namesResult = _universeApi.PostUniverseNames(chunk, dataSource);
 
-                outpostNames.AddRange(namesResult);
+                names.AddRange(namesResult);
             }
 
-            return outpostNames.Where(x => x.Category == PostUniverseNames200Ok.CategoryEnum.Station).ToDictionary(x => x.Id.GetValueOrDefault(), x => x.Name);
+            return names
+                    .Where(x => x.Category == PostUniverseNames200Ok.CategoryEnum.Station)
+                    .Where(x => x.Id.HasValue)
+                    .ToDictionary(x => x.Id.GetValueOrDefault(), x => x.Name);
 
         }
     }

@@ -14,7 +14,8 @@ namespace EVEMon.Common.Models.EsiProviders
             {
                 new CharacterInfoEsiProvider(),
                 new ServerStatusEsiProvider(),
-                new ConquerableStationListEsiProvider()
+                new ConquerableStationListEsiProvider(),
+                new CharacterNameEsiProvider()
             };
         }
 

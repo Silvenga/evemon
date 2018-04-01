@@ -204,6 +204,7 @@
     <Compile Include="Helpers\TaskHelper.cs" />
     <Compile Include="Models\AccountStatus.cs" />
     <Compile Include="Models\EsiApiProvider.cs" />
+    <Compile Include="Models\EsiProviders\CharacterNameEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\ConquerableStationListEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\ServerStatusEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\CharacterInfoEsiProvider.cs" />
