@@ -15,7 +15,7 @@ const webpackConfig: webpack.Configuration = {
     target: 'web',
     output: {
         path: outputDirectory,
-        publicPath: '/',
+        publicPath: '/bootstrapper',
         filename: '[name].bundle.js',
         chunkFilename: '[name].chunk.js'
     },
@@ -64,7 +64,7 @@ const webpackConfig: webpack.Configuration = {
     },
     devServer: {
         inline: true,
-        contentBase: '/',
+        contentBase: '/bootstrapper',
         port: 8080
     },
     plugins: [
