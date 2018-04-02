@@ -12,6 +12,7 @@ namespace EVEMon.Common.Models
     public sealed class CharacterIdentity
     {
         private readonly Collection<APIKey> m_apiKeys;
+        private readonly Collection<EsiToken> m_esiTokens;
 
         /// <summary>
         /// Constructor from an id and a name.
@@ -37,6 +38,7 @@ namespace EVEMon.Common.Models
             FactionName = factionName;
 
             m_apiKeys = new Collection<APIKey>();
+            m_esiTokens = new Collection<EsiToken>();
         }
 
         /// <summary>
@@ -94,6 +96,11 @@ namespace EVEMon.Common.Models
         /// The name of the faction.
         /// </value>
         public string FactionName { get; set; }
+
+        /// <summary>
+        /// Gets the Esi Tokens this identity is associated with.
+        /// </summary>
+        public Collection<EsiToken> EsiTokens => m_esiTokens;
 
         /// <summary>
         /// Gets the API keys this identity is associated with.

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Xml.Xsl;
 
@@ -31,7 +32,10 @@ namespace EVEMon.Common.Models
                 // TODO HACK
                 var keyValues = postData?.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
 
-                var result = provider.Invoke(keyValues, DataSource, "ADD THIS THING");
+                // TODO yea need token management
+                //var token = File.ReadAllText(@"C:\temp\evemontoken.txt");
+
+                var result = provider.Invoke(keyValues, DataSource, "ADD THIS");
                 callback(result);
             }
         }

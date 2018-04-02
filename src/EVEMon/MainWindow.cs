@@ -35,6 +35,7 @@ using EVEMon.Common.Serialization.Settings;
 using EVEMon.Common.Service;
 using EVEMon.Common.SettingsObjects;
 using EVEMon.DetailsWindow;
+using EVEMon.EsiTokenManagement;
 using EVEMon.ImplantControls;
 using EVEMon.LogitechG15;
 using EVEMon.NotificationWindow;
@@ -2431,5 +2432,21 @@ namespace EVEMon
         }
 
         #endregion
+
+        private void addESITokenMenuItem_Click(object sender, EventArgs e)
+        {
+            using (EsiTokenAdditionWindow window = new EsiTokenAdditionWindow())
+            {
+                window.ShowDialog(this);
+            }
+        }
+
+        private void manageESITokensMenuItem_Click(object sender, EventArgs e)
+        {
+            using (ApiKeysManagementWindow window = new ApiKeysManagementWindow())
+            {
+                window.ShowDialog(this);
+            }
+        }
     }
 }

@@ -436,6 +436,14 @@ namespace EVEMon.Common
         }
 
         /// <summary>
+        /// Called when the monitored state of an ESI Token changed.
+        /// </summary>
+        internal static void OnESITokenMonitoredChanged()
+        {
+            //TODO: add
+        }
+
+        /// <summary>
         /// Called when the monitored characters changed.
         /// </summary>
         internal static void OnMonitoredCharactersChanged()

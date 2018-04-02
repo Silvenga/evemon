@@ -169,6 +169,7 @@
     <Compile Include="AsyncPump.cs" />
     <Compile Include="CloudStorageServices\AuthenticationSteps.cs" />
     <Compile Include="Controls\CustomCursors.cs" />
+    <Compile Include="CustomEventArgs\EsiTokenCreationEventArgs.cs" />
     <Compile Include="Enumerations\AttributeOptimizationStrategy.cs" />
     <Compile Include="Enumerations\BlinkAction.cs" />
     <Compile Include="Enumerations\UISettings\AssetGrouping.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\TaskHelper.cs" />
     <Compile Include="Models\AccountStatus.cs" />
+    <Compile Include="Models\EsiToken.cs" />
     <Compile Include="Models\EsiApiProvider.cs" />
     <Compile Include="Models\EsiProviders\CharacterNameEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\ConquerableStationListEsiProvider.cs" />
@@ -380,6 +382,7 @@
     <Compile Include="Serialization\Datafiles\SerializableMasteryCertificate.cs" />
     <Compile Include="Serialization\Datafiles\SerializableMasteryShip.cs" />
     <Compile Include="Models\Comparers\SerializableSettingsComparer.cs" />
+    <Compile Include="Serialization\Settings\SerializableEsiToken.cs" />
     <Compile Include="Service\CodeCompiler.cs" />
     <Compile Include="Controls\AutoEllipsisToolStripRenderer.cs" />
     <Compile Include="Controls\BorderPanel.cs">

@@ -282,6 +282,12 @@
     <Compile Include="CharacterMonitoring\ContractsColumnsSelectWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="EsiTokenManagement\EsiTokenAdditionWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EsiTokenManagement\EsiTokenAdditionWindow.Designer.cs">
+      <DependentUpon>EsiTokenAdditionWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="NotificationWindow\ContractsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -609,6 +615,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DetailsWindow\ContractDetailsWindow.resx">
       <DependentUpon>ContractDetailsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EsiTokenManagement\EsiTokenAdditionWindow.resx">
+      <DependentUpon>EsiTokenAdditionWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NotificationWindow\ContractsWindow.resx">
       <DependentUpon>ContractsWindow.cs</DependentUpon>

@@ -223,6 +223,9 @@
   <data name="EVEGateBase" xml:space="preserve">
     <value>https://gate.eveonline.com</value>
   </data>
+  <data name="EsiTokenBootstrapper" xml:space="preserve">
+    <value>https://evemondevteam.github.io/evemon/esitokens</value>
+  </data>
   <data name="EVEGateCharacterProfile" xml:space="preserve">
     <value>/Profile/{0}</value>
   </data>
