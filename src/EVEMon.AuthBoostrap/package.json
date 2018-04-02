@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "cross-env TS_NODE_PROJECT=\"webpack.tsconfig.json\" nodemon --watch webpack.config.ts --exec webpack-dev-server --progress",
-    "build": "webpack -p --no-color"
+    "build": "cross-env TS_NODE_PROJECT=\"webpack.tsconfig.json\" webpack -p --no-color"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.38",

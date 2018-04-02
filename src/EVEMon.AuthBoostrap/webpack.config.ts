@@ -15,12 +15,11 @@ const webpackConfig: webpack.Configuration = {
     target: 'web',
     output: {
         path: outputDirectory,
-        publicPath: '/bootstrapper',
+        publicPath: '/evemon/bootstrapper',
         filename: '[name].bundle.js',
         chunkFilename: '[name].chunk.js'
     },
     devtool: 'source-map',
-    watch: true,
     module: {
         rules: [
             {
@@ -64,7 +63,7 @@ const webpackConfig: webpack.Configuration = {
     },
     devServer: {
         inline: true,
-        contentBase: '/bootstrapper',
+        contentBase: '/evemon/bootstrapper',
         port: 8080
     },
     plugins: [
