@@ -15,7 +15,7 @@ const webpackConfig: webpack.Configuration = {
     target: 'web',
     output: {
         path: outputDirectory,
-        publicPath: '/evemon/bootstrapper',
+        publicPath: '/evemon/bootstrapper/',
         filename: '[name].bundle.js',
         chunkFilename: '[name].chunk.js'
     },

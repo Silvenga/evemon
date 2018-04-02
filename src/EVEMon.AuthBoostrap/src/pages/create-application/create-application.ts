@@ -13,7 +13,7 @@ export class CreateApplicationPage {
     public constructor(router: Router) {
         this._router = router;
 
-        this.callbackUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "/" + this._router.generate("callback");
+        this.callbackUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + this._router.generate("callback");
     }
 
     public activate(params: any) {
