@@ -1,12 +1,20 @@
+import { autoinject } from 'aurelia-framework';
 import "./create-application.scss";
+import { Router } from "aurelia-router";
 
+@autoinject
 export class CreateApplicationPage {
 
-    public get callbackUrl() {
-        return window.location.protocol + "//" + window.location.host + "/#/callback";
-    }
+    private _router: Router;
 
     public clientId: string;
+    public callbackUrl: string;
+
+    public constructor(router: Router) {
+        this._router = router;
+
+        this.callbackUrl = window.location.protocol + "//" + window.location.host + "/" + this._router.generate("callback");
+    }
 
     public activate(params: any) {
         params = params || {};
