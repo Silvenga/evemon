@@ -1,0 +1,54 @@
+<template>
+
+    <div class="d-flex flex-column align-items-center">
+
+        <h1 class="display-4">EVEMon Bootstrapper</h1>
+
+        <p>
+            Using Client Id:
+            <code>${clientId}</code>
+        </p>
+
+        <h2 class="mt-4">Add a New Character</h2>
+        <hr class="w-100">
+
+        <p>Log-in once per character.</p>
+
+        <a href="#" click.delegate="addCharacter()">
+            <img src="../../assets/eve-sso-login-black-large.png" alt="LOG IN with EVE Online" class="img-fluid">
+        </a>
+
+        <h2 class="mt-4">Character List</h2>
+        <hr class="w-100">
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Expires</th>
+                    <th scope="col">Code</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr repeat.for="c of characters">
+                    <th>${c.id}</th>
+                    <td>${c.status}</td>
+                    <td>${c.expiresAfter}</td>
+                    <td>
+                        <div class="input-group">
+                            <input ref="descElement" class="form-control" readonly value="${c.authCode}">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" click.trigger="copyText(descElement.value)">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</template>

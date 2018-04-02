@@ -30,10 +30,32 @@ const webpackConfig: webpack.Configuration = {
             {
                 test: /\.ts?$/,
                 use: [
-                    {loader: 'babel-loader'},
-                    {loader: 'ts-loader'}
+                    { loader: 'babel-loader' },
+                    { loader: 'ts-loader' }
                 ]
-            }
+            },
+            {
+                test: /\.(scss)$/,
+                use: [{
+                    loader: 'style-loader',
+                }, {
+                    loader: 'css-loader',
+                }, {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: function () {
+                            return [
+                                require('precss'),
+                                require('autoprefixer')
+                            ];
+                        }
+                    }
+                }, {
+                    loader: 'sass-loader'
+                }]
+            },
+            { test: /\.(jpg|png|gif|woff2|woff)$/, use: ["file-loader"] },
+            { test: /\.(svg)$/, use: ["url-loader"] },
         ]
     },
     resolve: {
@@ -43,7 +65,6 @@ const webpackConfig: webpack.Configuration = {
     devServer: {
         inline: true,
         contentBase: '/',
-        historyApiFallback: true,
         port: 8080
     },
     plugins: [

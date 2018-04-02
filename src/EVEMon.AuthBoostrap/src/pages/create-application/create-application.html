@@ -1,0 +1,160 @@
+<template>
+
+    <div class="d-flex flex-column align-items-center">
+
+        <h1 class="display-4">EVEMon Bootstrapper</h1>
+
+        <h2 class="mt-4">Step 1</h2>
+        <hr class="w-100">
+
+        <p>
+            First we need to create an applicaiton with CCP. You only need to do this once (even if you have multiple characters).
+        </p>
+        <p>
+            <i>If you already have a Client Id you can skip to step two.</i>
+        </p>
+
+        <a role="button" target="_blank" class="btn btn-primary" href="https://developers.eveonline.com/applications/create">
+            Create Applicaiton
+            <i class="fas fa-external-link-alt"></i>
+        </a>
+
+        <div class="card mt-3">
+            <div class="card-body d-block">
+
+                <p>Fill out the forum using the following information:</p>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">
+                        <b>Name:</b>
+                    </label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input ref="nameElement" class="form-control" readonly value="EVEMon">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" readonly click.trigger="copyText(nameElement.value)">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">
+                        <b>Description:</b>
+                    </label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input ref="descElement" class="form-control" readonly value="EVEMon client.">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" click.trigger="copyText(descElement.value)">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">
+                        <b>Connection Type:</b>
+                    </label>
+                    <div class="col-sm-9 d-flex align-items-center">
+                        <div class="input-group">
+                            <i>Authentication & API Access</i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">
+                        <b>Permissions:</b>
+                    </label>
+                    <div class="col-sm-9 d-flex align-items-center">
+                        <div class="input-group">
+                            <i>All Scopes</i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">
+                        <b>Callback Url:</b>
+                    </label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input ref="callbackElement" class="form-control" readonly value.bind="callbackUrl">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" click.trigger="copyText(callbackElement.value)">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                When finished, click the
+                <i>Create Application</i> button.
+
+            </div>
+        </div>
+
+        <h2 class="mt-4">Step 2</h2>
+        <hr class="w-100">
+
+        <p>Now let's view the application that you just created. Click the
+            <i>View Application</i> button on the
+            <i>Applications</i> page.
+        </p>
+
+        <div class="card mt-3">
+            <div class="card-body">
+
+                <p>Scroll down to the
+                    <i>Application Settings</i> section, we'll need some of that information.
+                </p>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">
+                        <b>Client ID:</b>
+                    </label>
+                    <div class="col-sm-9">
+                        <input class="form-control" value.bind="clientId">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">
+                        <b>Secret Key:</b>
+                    </label>
+                    <div class="col-sm-9 d-flex align-items-center">
+                        <i>We'll need this later - so keep it handy.</i>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mb-0" role="alert">
+                    Remember, never type the
+                    <b>Secret Key</b> into a web broswer.
+                </div>
+
+            </div>
+        </div>
+
+        <h2 class="mt-4">Step 3</h2>
+        <hr class="w-100">
+
+        <p>Now that we have everything, let's get tokens for EVEMon.</p>
+
+        <a role="button" class="btn btn-primary btn-lg mt-2 ${ clientId ? '' : 'disabled' }" route-href="route.bind: 'create-request';  params.bind: { clientId: clientId }">
+            Bootstrap
+            <i class="fas fa-chevron-circle-right"></i>
+        </a>
+
+        <p show.bind="clientId" class="mt-2"> Will use <i>Client Id</i>
+            <code>${clientId}</code>
+        </p>
+
+    </div>
+
+</template>
