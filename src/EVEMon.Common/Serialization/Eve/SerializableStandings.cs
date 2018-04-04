@@ -7,9 +7,9 @@ namespace EVEMon.Common.Serialization.Eve
 {
     public sealed class SerializableStandings
     {
-        private readonly Collection<SerializableStandingsListItem> m_agentStandings;
-        private readonly Collection<SerializableStandingsListItem> m_npcCorporationStandings;
-        private readonly Collection<SerializableStandingsListItem> m_factionStandings;
+        private Collection<SerializableStandingsListItem> m_agentStandings;
+        private Collection<SerializableStandingsListItem> m_npcCorporationStandings;
+        private Collection<SerializableStandingsListItem> m_factionStandings;
 
         public SerializableStandings()
         {
@@ -30,6 +30,7 @@ namespace EVEMon.Common.Serialization.Eve
                 }
                 return m_agentStandings;
             }
+            set => m_agentStandings = value;
         }
 
         [XmlArray("NPCCorporations")]
@@ -44,6 +45,7 @@ namespace EVEMon.Common.Serialization.Eve
                 }
                 return m_npcCorporationStandings;
             }
+            set => m_npcCorporationStandings = value;
         }
 
         [XmlArray("factions")]
@@ -58,6 +60,7 @@ namespace EVEMon.Common.Serialization.Eve
                 }
                 return m_factionStandings;
             }
+            set => m_factionStandings = value;
         }
 
         [XmlIgnore]

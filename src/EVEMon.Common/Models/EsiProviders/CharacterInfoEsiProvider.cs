@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using EVEMon.Common.Collections;
+using EVEMon.Common.Constants;
+using EVEMon.Common.Data;
 using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Serialization.Eve;
 
@@ -12,7 +14,7 @@ namespace EVEMon.Common.Models.EsiProviders
 {
     public class CharacterInfoEsiProvider : IEsiProvider<SerializableAPICharacterInfo>
     {
-        private readonly ICharacterApi _charactorApi;
+        private readonly ICharacterApi _characterApi;
         private readonly ICorporationApi _corporationApi;
         private readonly ILocationApi _locationApi;
         private readonly IUniverseApi _universeApi;
@@ -21,7 +23,7 @@ namespace EVEMon.Common.Models.EsiProviders
 
         public CharacterInfoEsiProvider()
         {
-            _charactorApi = new CharacterApi();
+            _characterApi = new CharacterApi();
             _corporationApi = new CorporationApi();
             _locationApi = new LocationApi();
             _universeApi = new UniverseApi();
@@ -72,7 +74,7 @@ namespace EVEMon.Common.Models.EsiProviders
 
         private double GetSecurityStatus(int characterId, string dataSource)
         {
-            var character = _charactorApi.GetCharactersCharacterId(characterId, dataSource);
+            var character = _characterApi.GetCharactersCharacterId(characterId, dataSource);
             return character.SecurityStatus.GetValueOrDefault();
         }
 
@@ -85,12 +87,14 @@ namespace EVEMon.Common.Models.EsiProviders
         private string GetShipType(int characterId, string dataSource, string accessToken)
         {
             var location = _locationApi.GetCharactersCharacterIdShip(characterId, dataSource, accessToken);
-            return location.ShipTypeId.ToString(); // TODO
+            var shipTypeId = location.ShipTypeId.GetValueOrDefault();
+            var ship = StaticItems.GetItemByID(shipTypeId);
+            return ship == null || shipTypeId == 0 ? EveMonConstants.UnknownText : ship.Name;
         }
 
         private IEnumerable<SerializableEmploymentHistoryListItem> GetCorperationHistory(int characterId, string dataSource)
         {
-            var corpHistory = _charactorApi.GetCharactersCharacterIdCorporationhistory(characterId, dataSource);
+            var corpHistory = _characterApi.GetCharactersCharacterIdCorporationhistory(characterId, dataSource);
             var history = corpHistory.Select(x => new SerializableEmploymentHistoryListItem
             {
                 CorporationID = x.CorporationId.GetValueOrDefault(),

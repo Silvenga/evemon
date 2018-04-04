@@ -33,9 +33,9 @@ namespace EVEMon.Common.Models
                 var keyValues = postData?.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
 
                 // TODO yea need token management
-                //var token = File.ReadAllText(@"C:\temp\evemontoken.txt");
+                var token = File.ReadAllText(@"C:\temp\evemontoken.txt");
 
-                var result = provider.Invoke(keyValues, DataSource, "ADD THIS");
+                var result = provider.Invoke(keyValues, DataSource, token);
                 callback(result);
             }
         }

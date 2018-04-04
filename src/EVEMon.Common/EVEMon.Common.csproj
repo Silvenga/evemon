@@ -204,6 +204,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\TaskHelper.cs" />
     <Compile Include="Models\AccountStatus.cs" />
+    <Compile Include="Models\EsiProviders\StandingsEsiProvider.cs" />
     <Compile Include="Models\EsiToken.cs" />
     <Compile Include="Models\EsiApiProvider.cs" />
     <Compile Include="Models\EsiProviders\CharacterNameEsiProvider.cs" />

@@ -12,7 +12,10 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             _apiProviders = new List<IEsiProvider>
             {
+                //CCPAPICharacterMethods
                 new CharacterInfoEsiProvider(),
+                new StandingsEsiProvider(),
+                //CCPAPIGenericMethods
                 new ServerStatusEsiProvider(),
                 new ConquerableStationListEsiProvider(),
                 new CharacterNameEsiProvider()
