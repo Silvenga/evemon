@@ -16,8 +16,8 @@ namespace EVEMon.Common.Models.EsiProviders
     public class StandingsEsiProvider : IEsiProvider<SerializableAPIStandings>
     {
         private readonly ICharacterApi _characterApi;
-        private readonly CorporationApi _corporationApi;
-        private readonly AllianceApi _allianceApi;
+        private readonly ICorporationApi _corporationApi;
+        private readonly IAllianceApi _allianceApi;
 
         public Enum Provides { get; } = CCPAPICharacterMethods.Standings;
 
