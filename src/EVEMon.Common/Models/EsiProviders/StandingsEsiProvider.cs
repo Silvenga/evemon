@@ -9,20 +9,23 @@ using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Serialization.Eve;
 
 using IO.Swagger.Api;
+using IO.Swagger.Model;
 
 namespace EVEMon.Common.Models.EsiProviders
 {
     public class StandingsEsiProvider : IEsiProvider<SerializableAPIStandings>
     {
         private readonly ICharacterApi _characterApi;
-        private readonly IUniverseApi _universeApi;
+        private readonly CorporationApi _corporationApi;
+        private readonly AllianceApi _allianceApi;
 
         public Enum Provides { get; } = CCPAPICharacterMethods.Standings;
 
         public StandingsEsiProvider()
         {
             _characterApi = new CharacterApi();
-            _universeApi = new UniverseApi();
+            _corporationApi = new CorporationApi();
+            _allianceApi = new AllianceApi();
         }
 
         public CCPAPIResult<SerializableAPIStandings> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)
@@ -39,49 +42,144 @@ namespace EVEMon.Common.Models.EsiProviders
 
             var standings = _characterApi.GetCharactersCharacterIdStandings(characterId, dataSource, accessToken);
 
-            var agentStandings = standings
-                    .Where(x => x.FromType == IO.Swagger.Model.GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Agent)
-                    .Select(x => new SerializableStandingsListItem
-                    {
-                        //TODO: name
-                        Name = x.FromId.ToString(),
-                        Group = StandingGroup.Agents,
-                        ID = x.FromId.GetValueOrDefault(),
-                        StandingValue = x.Standing.GetValueOrDefault()
-                    }).ToList();
+            result.Result.CharacterNPCStandings.AgentStandings = GetAgentStandings(standings, dataSource);
+            result.Result.CharacterNPCStandings.NPCCorporationStandings = GetNpcCorpStandings(standings, dataSource);
+            result.Result.CharacterNPCStandings.FactionStandings = GetFactionStandings(standings, dataSource);
 
-            result.Result.CharacterNPCStandings.AgentStandings =
-                new Collection<SerializableStandingsListItem>(agentStandings);
+            return result;
+        }
 
-            var npcStandings = standings
-                .Where(x => x.FromType == IO.Swagger.Model.GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Npccorp)
+        private Collection<SerializableStandingsListItem> GetAgentStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string datasource)
+        {
+            var filterdStandings = standings
+                .Where(x => x.FromType == GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Agent);
+
+            //ew casts
+            var agentNameLookup =
+                GetAgentNames(filterdStandings.Select(x => (long?) x.FromId).ToList(), datasource);
+
+            var agentStandings = filterdStandings
+                .Select(x => new SerializableStandingsListItem
+            {
+                //TODO: name
+                Name = agentNameLookup[x.FromId.GetValueOrDefault()],
+                Group = StandingGroup.Agents,
+                ID = x.FromId.GetValueOrDefault(),
+                StandingValue = x.Standing.GetValueOrDefault()
+            }).ToList();
+
+            return new Collection<SerializableStandingsListItem>(agentStandings);
+        }
+
+        private Collection<SerializableStandingsListItem> GetNpcCorpStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string datasource)
+        {
+            var filterdStandings = standings
+                .Where(x => x.FromType == GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Npccorp);
+
+            //ew casts
+            var ncpCorpLookup =
+                GetNpcCorpNames(filterdStandings.Select(x => (long?)x.FromId).ToList(), datasource);
+
+            var npCorpStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
                 {
                     //TODO: name
-                    Name = x.FromId.ToString(),
+                    Name = ncpCorpLookup[x.FromId.GetValueOrDefault()],
                     Group = StandingGroup.NPCCorporations,
                     ID = x.FromId.GetValueOrDefault(),
                     StandingValue = x.Standing.GetValueOrDefault()
                 }).ToList();
 
-            result.Result.CharacterNPCStandings.NPCCorporationStandings =
-                new Collection<SerializableStandingsListItem>(npcStandings);
+            return new Collection<SerializableStandingsListItem>(npCorpStandings);
+        }
 
-            var factionsStandings = standings
-                .Where(x => x.FromType == IO.Swagger.Model.GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Faction)
+
+        private Collection<SerializableStandingsListItem> GetFactionStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string datasource)
+        {
+            var filterdStandings = standings
+                .Where(x => x.FromType == GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Faction);
+
+            //ew casts
+            var factionLookup =
+                GetNpcCorpNames(filterdStandings.Select(x => (long?)x.FromId).ToList(), datasource);
+
+            var factionStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
                 {
                     //TODO: name
-                    Name = x.FromId.ToString(),
+                    Name = factionLookup[x.FromId.GetValueOrDefault()],
                     Group = StandingGroup.Factions,
                     ID = x.FromId.GetValueOrDefault(),
                     StandingValue = x.Standing.GetValueOrDefault()
                 }).ToList();
 
-            result.Result.CharacterNPCStandings.FactionStandings =
-                new Collection<SerializableStandingsListItem>(factionsStandings);
+            return new Collection<SerializableStandingsListItem>(factionStandings);
+        }
 
-            return result;
-        } 
+        //TODO: abstract this better
+
+        private Dictionary<long, string> GetAgentNames(List<long?> ids, string dataSource)
+        {
+            //Endpoint maxes out at 1k ids passed
+            var chunkedIds = ids.ChunkBy(1000);
+
+            //TODO: dont like using swaggger classes
+            var names = new List<GetCharactersNames200Ok>();
+
+            foreach (var chunk in chunkedIds)
+            {
+                var namesResult = _characterApi.GetCharactersNames(chunk, dataSource);
+
+                names.AddRange(namesResult);
+            }
+
+            return names
+                .Where(x => x.CharacterId.HasValue)
+                .ToDictionary(x => x.CharacterId.GetValueOrDefault(), x => x.CharacterName);
+
+        }
+
+        private Dictionary<int, string> GetNpcCorpNames(List<long?> ids, string dataSource)
+        {
+            //Endpoint maxes out at 1k ids passed
+            var chunkedIds = ids.ChunkBy(1000);
+
+            //TODO: dont like using swaggger classes
+            var names = new List<GetCorporationsNames200Ok>();
+
+            foreach (var chunk in chunkedIds)
+            {
+                var namesResult = _corporationApi.GetCorporationsNames(chunk, dataSource);
+
+                names.AddRange(namesResult);
+            }
+
+            return names
+                .Where(x => x.CorporationId.HasValue)
+                .ToDictionary(x => x.CorporationId.GetValueOrDefault(), x => x.CorporationName);
+
+        }
+
+        //Yea apparently the universe api doesnt handle alliances that are factions?
+        private Dictionary<int, string> GetNpcFactionNames(List<long?> ids, string dataSource)
+        {
+            //Endpoint maxes out at 1k ids passed
+            var chunkedIds = ids.ChunkBy(1000);
+
+            //TODO: dont like using swaggger classes
+            var names = new List<GetAlliancesNames200Ok>();
+
+            foreach (var chunk in chunkedIds)
+            {
+                var namesResult = _allianceApi.GetAlliancesNames(chunk, dataSource);
+
+                names.AddRange(namesResult);
+            }
+
+            return names
+                .Where(x => x.AllianceId.HasValue)
+                .ToDictionary(x => x.AllianceId.GetValueOrDefault(), x => x.AllianceName);
+
+        }
     }
 }

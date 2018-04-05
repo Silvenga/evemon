@@ -9,6 +9,7 @@ using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Serialization.Eve;
 
 using IO.Swagger.Api;
+using IO.Swagger.Model;
 
 namespace EVEMon.Common.Models.EsiProviders
 {
@@ -46,7 +47,7 @@ namespace EVEMon.Common.Models.EsiProviders
 
 
             result.Result.EmploymentHistory.Clear();
-            result.Result.EmploymentHistory.AddRange(GetCorperationHistory(characterId, dataSource));
+            result.Result.EmploymentHistory.AddRange(GetCorporationHistory(characterId, dataSource));
 
             return result;
         }
@@ -92,18 +93,42 @@ namespace EVEMon.Common.Models.EsiProviders
             return ship == null || shipTypeId == 0 ? EveMonConstants.UnknownText : ship.Name;
         }
 
-        private IEnumerable<SerializableEmploymentHistoryListItem> GetCorperationHistory(int characterId, string dataSource)
+        private IEnumerable<SerializableEmploymentHistoryListItem> GetCorporationHistory(int characterId, string dataSource)
         {
             var corpHistory = _characterApi.GetCharactersCharacterIdCorporationhistory(characterId, dataSource);
+            //Ew casts
+            var corpNameMapping =
+                GetCorpNames(corpHistory.Select(x => (long?) x.CorporationId).ToList(), dataSource);
             var history = corpHistory.Select(x => new SerializableEmploymentHistoryListItem
             {
                 CorporationID = x.CorporationId.GetValueOrDefault(),
-                CorporationName = _corporationApi.GetCorporationsCorporationId(x.CorporationId.GetValueOrDefault(), dataSource).CorporationName,
+                CorporationName = corpNameMapping[x.CorporationId.GetValueOrDefault()],
                 RecordID = x.RecordId.GetValueOrDefault(),
                 StartDate = x.StartDate.GetValueOrDefault(),
 
             });
             return history;
+        }
+
+        private Dictionary<int, string> GetCorpNames(List<long?> ids, string dataSource)
+        {
+            //Endpoint maxes out at 1k ids passed
+            var chunkedIds = ids.ChunkBy(1000);
+
+            //TODO: dont like using swaggger classes
+            var names = new List<GetCorporationsNames200Ok>();
+
+            foreach (var chunk in chunkedIds)
+            {
+                var namesResult = _corporationApi.GetCorporationsNames(chunk, dataSource);
+
+                names.AddRange(namesResult);
+            }
+
+            return names
+                .Where(x => x.CorporationId.HasValue)
+                .ToDictionary(x => x.CorporationId.GetValueOrDefault(), x => x.CorporationName);
+
         }
     }
 }
