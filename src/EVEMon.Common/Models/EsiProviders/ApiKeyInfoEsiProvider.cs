@@ -51,8 +51,8 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             var characterId = GetCharacterId(accessToken);
 
-            var characterInfo = _characterApi.GetCharactersCharacterId((int?) characterId, dataSource, accessToken);
-            var location = _locationApi.GetCharactersCharacterIdShip((int?) characterId, dataSource, accessToken);
+            var characterInfo = _characterApi.GetCharactersCharacterId((int) characterId, dataSource, accessToken);
+            var location = _locationApi.GetCharactersCharacterIdShip((int) characterId, dataSource, accessToken);
 
             return new SerializableCharacterListItem
             {
@@ -60,7 +60,7 @@ namespace EVEMon.Common.Models.EsiProviders
                 ID = characterId,
                 AllianceID = characterInfo.AllianceId.GetValueOrDefault(),
                 CorporationID = characterInfo.CorporationId.GetValueOrDefault(),
-                //FactionID = characterInfo.
+                FactionID = characterInfo.FactionId.GetValueOrDefault(),
                 ShipTypeID = location.ShipTypeId.GetValueOrDefault(),
                 //TODO: names
             };

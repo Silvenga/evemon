@@ -38,12 +38,12 @@ namespace EVEMon.Common.Serialization.Eve
         /// The date and time the account expires.
         /// </summary>
         [XmlIgnore]
-        public DateTime PaidUntil { get; private set; }
+        public DateTime PaidUntil { get; set; }
 
         /// <summary>
         /// The date and time the account was created.
         /// </summary>
         [XmlIgnore]
-        public DateTime CreateDate { get; private set; }
+        public DateTime CreateDate { get; set; }
     }
 }
