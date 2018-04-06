@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Serialization.Eve;
 
@@ -22,13 +23,24 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             var characterId = int.Parse(legacyPostData["characterID"]);
 
-            //TODO: query skillqueue and look at the first item if there is a start and end date then its currently training
+            //TODO: handle empty skill queue
+
+            var firstQueueSkill = _skillsApi.GetCharactersCharacterIdSkillqueue(characterId, dataSource, accessToken)
+                .OrderBy(x => x.QueuePosition.GetValueOrDefault()).First();
 
             var result = new CCPAPIResult<SerializableAPISkillInTraining>
             {
                 Result = new SerializableAPISkillInTraining
                 {
-                    
+                    SkillInTraining = (byte) (firstQueueSkill.StartDate.HasValue ? 1 : 0),
+                    StartTime = firstQueueSkill.StartDate.GetValueOrDefault(),
+                    EndTime = firstQueueSkill.FinishDate.GetValueOrDefault(),
+                    TrainingTypeID = firstQueueSkill.SkillId.GetValueOrDefault(),
+                    //I think this is the right value?
+                    TrainingStartSP = firstQueueSkill.LevelStartSp.GetValueOrDefault(),
+                    TrainingDestinationSP = firstQueueSkill.LevelEndSp.GetValueOrDefault(), 
+                    TrainingToLevel = (byte) firstQueueSkill.FinishedLevel.GetValueOrDefault(),
+                    //Dont bother with tqtime, or trainingtime
                 }
             };
 

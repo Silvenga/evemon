@@ -16,6 +16,7 @@ namespace EVEMon.Common.Models.EsiProviders
                 new CharacterInfoEsiProvider(),
                 new StandingsEsiProvider(),
                 new SkillQueueEsiProvider(),
+                new SkillInTrainingEsiProvider(),
                 //CCPAPIGenericMethods
                 new ServerStatusEsiProvider(),
                 new ConquerableStationListEsiProvider(),
