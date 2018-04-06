@@ -98,7 +98,7 @@ namespace EVEMon.Common.Models.EsiProviders
             var corpHistory = _characterApi.GetCharactersCharacterIdCorporationhistory(characterId, dataSource);
             //Ew casts
             var corpNameMapping =
-                GetCorpNames(corpHistory.Select(x => (long?) x.CorporationId).ToList(), dataSource);
+                GetCorpNames(corpHistory.Select(x => x.CorporationId).ToList(), dataSource);
             var history = corpHistory.Select(x => new SerializableEmploymentHistoryListItem
             {
                 CorporationID = x.CorporationId.GetValueOrDefault(),
@@ -110,7 +110,7 @@ namespace EVEMon.Common.Models.EsiProviders
             return history;
         }
 
-        private Dictionary<int, string> GetCorpNames(List<long?> ids, string dataSource)
+        private Dictionary<int, string> GetCorpNames(List<int?> ids, string dataSource)
         {
             //Endpoint maxes out at 1k ids passed
             var chunkedIds = ids.ChunkBy(1000);

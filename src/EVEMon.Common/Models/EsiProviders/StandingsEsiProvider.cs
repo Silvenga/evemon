@@ -78,7 +78,7 @@ namespace EVEMon.Common.Models.EsiProviders
 
             //ew casts
             var ncpCorpLookup =
-                GetNpcCorpNames(filterdStandings.Select(x => (long?)x.FromId).ToList(), datasource);
+                GetNpcCorpNames(filterdStandings.Select(x => x.FromId).ToList(), datasource);
 
             var npCorpStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
@@ -101,7 +101,7 @@ namespace EVEMon.Common.Models.EsiProviders
 
             //ew casts
             var factionLookup =
-                GetNpcCorpNames(filterdStandings.Select(x => (long?)x.FromId).ToList(), datasource);
+                GetNpcCorpNames(filterdStandings.Select(x => x.FromId).ToList(), datasource);
 
             var factionStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
@@ -139,7 +139,7 @@ namespace EVEMon.Common.Models.EsiProviders
 
         }
 
-        private Dictionary<int, string> GetNpcCorpNames(List<long?> ids, string dataSource)
+        private Dictionary<int, string> GetNpcCorpNames(List<int?> ids, string dataSource)
         {
             //Endpoint maxes out at 1k ids passed
             var chunkedIds = ids.ChunkBy(1000);
@@ -161,7 +161,7 @@ namespace EVEMon.Common.Models.EsiProviders
         }
 
         //Yea apparently the universe api doesnt handle alliances that are factions?
-        private Dictionary<int, string> GetNpcFactionNames(List<long?> ids, string dataSource)
+        private Dictionary<int, string> GetNpcFactionNames(List<int?> ids, string dataSource)
         {
             //Endpoint maxes out at 1k ids passed
             var chunkedIds = ids.ChunkBy(1000);
