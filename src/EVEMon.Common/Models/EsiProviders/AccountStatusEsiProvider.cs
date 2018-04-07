@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using EVEMon.Common.Enumerations.CCPAPI;
 using EVEMon.Common.Serialization.Eve;
@@ -34,7 +33,7 @@ namespace EVEMon.Common.Models.EsiProviders
                 Result = new SerializableAPIAccountStatus
                 {
                     CreateDate = characterInfo.Birthday.GetValueOrDefault(),
-                    //PaidUntil = DateTime.MaxValue //Dont set this because we dont know this info
+                    PaidUntil = DateTime.MaxValue //Assume omega for training time calculations, figuring out alpha vs omega is not exposed by ESI
                 }
             };
 
