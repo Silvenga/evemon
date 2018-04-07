@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Dropbox.Api.Users;
 using EVEMon.Common.Collections;
 using EVEMon.Common.Constants;
 using EVEMon.Common.Data;
@@ -23,6 +23,7 @@ namespace EVEMon.Common.Models.EsiProviders
         private readonly IWalletApi _walletApi;
         private readonly ISkillsApi _skillsApi;
         private readonly IClonesApi _clonesApi;
+        private readonly IAllianceApi _allianceApi;
 
 
         public Enum Provides { get; } = CCPAPICharacterMethods.CharacterSheet;
@@ -36,6 +37,7 @@ namespace EVEMon.Common.Models.EsiProviders
             _walletApi = new WalletApi();
             _skillsApi = new SkillsApi();
             _clonesApi = new ClonesApi();
+            _allianceApi = new AllianceApi();
         }
 
         public CCPAPIResult<SerializableAPICharacterSheet> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)
@@ -56,12 +58,12 @@ namespace EVEMon.Common.Models.EsiProviders
                     Name = characterInfo.Name,
                     Gender = characterInfo.Gender.ToString(),
                     CorporationID = characterInfo.CorporationId.GetValueOrDefault(),
-                    //TODO: Corp Name
+                    CorporationName = GetCorpName(characterInfo.CorporationId.GetValueOrDefault(), dataSource),
                     Birthday = characterInfo.Birthday.GetValueOrDefault(),
                     AllianceID = characterInfo.AllianceId.GetValueOrDefault(),
-                    //TODO: Alliance Name
+                    AllianceName = GetAllianceName(characterInfo.AllianceId.GetValueOrDefault(), dataSource),
                     FactionID = characterInfo.FactionId.GetValueOrDefault(),
-                    //TODO: Faction Name
+                    FactionName = GetFactionName(characterInfo.FactionId.GetValueOrDefault(), dataSource),
                     Ancestry = GetAncestryName(characterInfo.AncestryId.GetValueOrDefault(), dataSource),
                     BloodLine = GetBloodLineName(characterInfo.BloodlineId.GetValueOrDefault(), dataSource),
                     Race = GetRaceName(characterInfo.RaceId.GetValueOrDefault(), dataSource),
@@ -172,6 +174,24 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             var result = _walletApi.GetCharactersCharacterIdWallet(characterId, dataSource, accessToken);
             return (decimal) result.GetValueOrDefault();
+        }
+
+        private string GetCorpName(int corpId, string dataSource)
+        {
+            var corps = _corporationApi.GetCorporationsNames(new List<int?>{ corpId }, dataSource);
+            return corps.Single(x => x.CorporationId == corpId).CorporationName;
+        }
+
+        private string GetAllianceName(int allianceId, string dataSource)
+        {
+            var all = _allianceApi.GetAlliancesNames(new List<int?> { allianceId }, dataSource);
+            return all.Single(x => x.AllianceId == allianceId).AllianceName;
+        }
+
+        private string GetFactionName(int factionId, string dataSource)
+        {
+            var factions = _universeApi.GetUniverseFactions(dataSource);
+            return factions.SingleOrDefault(x => x.FactionId == factionId)?.Name;
         }
 
         private string GetRaceName(int raceId, string dataSource)
