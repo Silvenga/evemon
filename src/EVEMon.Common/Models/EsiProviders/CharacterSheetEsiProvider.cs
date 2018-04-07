@@ -64,6 +64,7 @@ namespace EVEMon.Common.Models.EsiProviders
                     //TODO: Faction Name
                     Ancestry = GetAncestryName(characterInfo.AncestryId.GetValueOrDefault(), dataSource),
                     BloodLine = GetBloodLineName(characterInfo.BloodlineId.GetValueOrDefault(), dataSource),
+                    Race = GetRaceName(characterInfo.RaceId.GetValueOrDefault(), dataSource),
                     LastKnownLocation = GetCharacterLocation(characterId, dataSource, accessToken),
                     SecurityStatus = GetSecurityStatus(characterId, dataSource),
                     ShipName = GetShipName(characterId, dataSource, accessToken),
@@ -81,7 +82,7 @@ namespace EVEMon.Common.Models.EsiProviders
                     //We cant tell the difference here (possibly by checking accrued remap cooldowndate?)
                     LastRespecDate = characterAttributes.LastRemapDate.GetValueOrDefault(),
                     LastTimedRespec = characterAttributes.LastRemapDate.GetValueOrDefault(),
-                    
+                    HomeStationID = characterClones.HomeLocation.LocationId.GetValueOrDefault(),
                     
                 }
             };
@@ -102,6 +103,12 @@ namespace EVEMon.Common.Models.EsiProviders
             return (decimal) result.GetValueOrDefault();
         }
 
+        private string GetRaceName(int raceId, string dataSource)
+        {
+            var races = _universeApi.GetUniverseRaces(dataSource);
+            return races.Single(x => x.RaceId == raceId).Name;
+        }
+
         private string GetBloodLineName(int bloodlineId, string dataSource)
         {
             var bloodlines = _universeApi.GetUniverseBloodlines(dataSource);
@@ -110,8 +117,8 @@ namespace EVEMon.Common.Models.EsiProviders
 
         private string GetAncestryName(int ancestryId, string dataSource)
         {
-            var bloodlines = _universeApi.GetUniverseAncestries(dataSource);
-            return bloodlines.Single(x => x.Id == ancestryId).Name;
+            var ancestries = _universeApi.GetUniverseAncestries(dataSource);
+            return ancestries.Single(x => x.Id == ancestryId).Name;
         }
 
         private string GetCharacterLocation(int characterId, string dataSource, string accessToken)
@@ -120,7 +127,7 @@ namespace EVEMon.Common.Models.EsiProviders
             //Handle that these are optional
             if (location.StructureId.HasValue)
             {
-                var structure = _universeApi.GetUniverseStructuresStructureId(location.StructureId.Value, dataSource);
+                var structure = _universeApi.GetUniverseStructuresStructureId(location.StructureId.Value, dataSource, accessToken);
                 return structure.Name;
             }
 
@@ -175,7 +182,7 @@ namespace EVEMon.Common.Models.EsiProviders
             //Endpoint maxes out at 1k ids passed
             var chunkedIds = ids.ChunkBy(1000);
 
-            //TODO: dont like using swaggger classes
+            //TODO: dont like using swagger classes
             var names = new List<GetCorporationsNames200Ok>();
 
             foreach (var chunk in chunkedIds)

@@ -110,10 +110,7 @@ namespace EVEMon.Common.Models.EsiProviders
         private Dictionary<int, string> GetCorpNames(List<int?> ids, string dataSource)
         {
             //Endpoint maxes out at 1k ids passed
-            var chunkedIds = ids
-                             .Distinct()
-                             .ToList()
-                             .ChunkBy(1000);
+            var chunkedIds = ids.ChunkBy(1000);
 
             //TODO: dont like using swagger classes
             var names = new List<GetCorporationsNames200Ok>();
