@@ -19,14 +19,14 @@ namespace EVEMon.Common.QueryMonitor
 
         public bool IsUpdating { get; set; }
 
-        public QueryStatus Status { get; private set; }
+        public QueryStatus Status { get; set; }
 
         public DateTimeOffset NextUpdate
         {
             get => (lastResult?.ExpiresAfter ?? DateTimeOffset.Now).AddMinutes(-5);
         }
 
-        public DateTimeOffset LastUpdate { get; private set; }
+        public DateTimeOffset LastUpdate { get; set; }
 
         private EsiTokenQueryMonitor()
         {
