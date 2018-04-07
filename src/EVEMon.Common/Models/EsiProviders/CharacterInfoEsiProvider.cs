@@ -45,7 +45,6 @@ namespace EVEMon.Common.Models.EsiProviders
                 }
             };
 
-
             result.Result.EmploymentHistory.Clear();
             result.Result.EmploymentHistory.AddRange(GetCorporationHistory(characterId, dataSource));
 
@@ -58,18 +57,18 @@ namespace EVEMon.Common.Models.EsiProviders
             //Handle that these are optional
             if (location.StructureId.HasValue)
             {
-                var structure = _universeApi.GetUniverseStructuresStructureId(location.StructureId.Value, dataSource);
+                var structure = _universeApi.GetUniverseStructuresStructureId(location.StructureId.Value, dataSource, accessToken);
                 return structure.Name;
             }
 
-            if(location.StationId.HasValue)
+            if (location.StationId.HasValue)
             {
                 var station = _universeApi.GetUniverseStationsStationId(location.StationId.Value, dataSource);
                 return station.Name;
             }
 
             var solarSystem = _universeApi.GetUniverseSystemsSystemId(location.SolarSystemId, dataSource);
-    
+
             return solarSystem.Name;
         }
 
@@ -104,7 +103,6 @@ namespace EVEMon.Common.Models.EsiProviders
                 CorporationName = corpNameMapping[x.CorporationId.GetValueOrDefault()],
                 RecordID = x.RecordId.GetValueOrDefault(),
                 StartDate = x.StartDate.GetValueOrDefault(),
-
             });
             return history;
         }
@@ -112,22 +110,23 @@ namespace EVEMon.Common.Models.EsiProviders
         private Dictionary<int, string> GetCorpNames(List<int?> ids, string dataSource)
         {
             //Endpoint maxes out at 1k ids passed
-            var chunkedIds = ids.ChunkBy(1000);
+            var chunkedIds = ids
+                             .Distinct()
+                             .ToList()
+                             .ChunkBy(1000);
 
-            //TODO: dont like using swaggger classes
+            //TODO: dont like using swagger classes
             var names = new List<GetCorporationsNames200Ok>();
 
             foreach (var chunk in chunkedIds)
             {
                 var namesResult = _corporationApi.GetCorporationsNames(chunk, dataSource);
-
                 names.AddRange(namesResult);
             }
 
             return names
-                .Where(x => x.CorporationId.HasValue)
-                .ToDictionary(x => x.CorporationId.GetValueOrDefault(), x => x.CorporationName);
-
+                   .Where(x => x.CorporationId.HasValue)
+                   .ToDictionary(x => x.CorporationId.GetValueOrDefault(), x => x.CorporationName);
         }
     }
 }
