@@ -45,8 +45,8 @@ namespace EVEMon.Common.Models.EsiProviders
             var characterInfo = _characterApi.GetCharactersCharacterId(characterId, dataSource);
             var characterAttributes = _skillsApi.GetCharactersCharacterIdAttributes(characterId, dataSource, accessToken);
             var characterClones = _clonesApi.GetCharactersCharacterIdClones(characterId, dataSource, accessToken);
-            
-
+            var characterFatigue = _characterApi.GetCharactersCharacterIdFatigue(characterId, dataSource, accessToken);
+            var characterSkills = _skillsApi.GetCharactersCharacterIdSkills(characterId, dataSource, accessToken);
 
             var result = new CCPAPIResult<SerializableAPICharacterSheet>
             {
@@ -70,6 +70,7 @@ namespace EVEMon.Common.Models.EsiProviders
                     ShipName = GetShipName(characterId, dataSource, accessToken),
                     ShipTypeName = GetShipTypeName(characterId, dataSource, accessToken),
                     Balance = GetWalletBalance(characterId, dataSource, accessToken),
+                    //This also handles boosters correctly
                     Attributes = new SerializableCharacterAttributes
                     {
                         Charisma = characterAttributes.Charisma.GetValueOrDefault(),
@@ -79,23 +80,93 @@ namespace EVEMon.Common.Models.EsiProviders
                         Willpower = characterAttributes.Willpower.GetValueOrDefault()
                     },
                     FreeRespecs = (short) characterAttributes.BonusRemaps.GetValueOrDefault(),
-                    //We cant tell the difference here (possibly by checking accrued remap cooldowndate?)
                     LastRespecDate = characterAttributes.LastRemapDate.GetValueOrDefault(),
+                    //We cant tell the difference here (possibly by checking accrued remap cooldowndate?)
                     LastTimedRespec = characterAttributes.LastRemapDate.GetValueOrDefault(),
                     HomeStationID = characterClones.HomeLocation.LocationId.GetValueOrDefault(),
-                    
+                    RemoteStationDate = characterClones.LastStationChangeDate.GetValueOrDefault(),
+                    CloneJumpDate = characterClones.LastCloneJumpDate.GetValueOrDefault(),
+                    JumpActivationDate = characterFatigue.LastJumpDate.GetValueOrDefault(),
+                    JumpFatigueDate = characterFatigue.JumpFatigueExpireDate.GetValueOrDefault(),
+                    JumpLastUpdateDate = characterFatigue.LastUpdateDate.GetValueOrDefault(),
+                    FreeSkillPoints = characterSkills.UnallocatedSp.GetValueOrDefault(),
                 }
             };
 
-
+            //CorpHistory
             result.Result.EmploymentHistory.Clear();
             result.Result.EmploymentHistory.AddRange(GetCorporationHistory(characterId, dataSource));
+
+            //Implants
+            result.Result.Implants.Clear();
+            result.Result.Implants.AddRange(GetImplants(characterId, dataSource, accessToken));
+
+            //Skills
+            result.Result.Skills.Clear();
+            result.Result.Skills.AddRange(GetSkills(characterSkills.Skills));
+
+            //JumpClones
+            result.Result.JumpClones.Clear();
+            result.Result.JumpClones.AddRange(GetJumpClones(characterClones.JumpClones));
+
+            //JumpCloneImplants
+            result.Result.JumpCloneImplants.Clear();
+            result.Result.JumpCloneImplants.AddRange(GetJumpCloneImplants(characterClones.JumpClones));
 
             //Not supported
             result.Result.Certificates.Clear();
 
             return result;
         }
+
+        private IEnumerable<SerializableCharacterJumpCloneImplant> GetJumpCloneImplants(List<GetCharactersCharacterIdClonesJumpClone> characterClones)
+        {
+            var implants = characterClones.SelectMany(x => x.Implants, (jc, imp) => new SerializableCharacterJumpCloneImplant
+            {
+                JumpCloneID = jc.JumpCloneId.GetValueOrDefault(),
+                TypeID = imp.GetValueOrDefault(),
+                TypeName = StaticItems.GetItemByID(imp.GetValueOrDefault()).Name
+            });
+            return implants;
+        }
+
+        private IEnumerable<SerializableCharacterJumpClone> GetJumpClones(List<GetCharactersCharacterIdClonesJumpClone> characterClones)
+        {
+            var clones = characterClones.Select(x => new SerializableCharacterJumpClone
+            {
+                JumpCloneID = x.JumpCloneId.GetValueOrDefault(),
+                LocationID = x.LocationId.GetValueOrDefault(),
+                CloneName = x.Name
+            });
+            return clones;
+        }
+
+
+        private IEnumerable<SerializableNewImplant> GetImplants(int characterId, string dataSource, string accessToken)
+        {
+            var characterImplants = _clonesApi.GetCharactersCharacterIdImplants(characterId, dataSource, accessToken);
+
+            var implants = characterImplants.Select(x => new SerializableNewImplant
+            {
+                ID = x.GetValueOrDefault(),
+                Name = StaticItems.GetItemByID(x.GetValueOrDefault()).Name
+            });
+            return implants;
+        }
+
+        private IEnumerable<SerializableCharacterSkill> GetSkills(List<GetCharactersCharacterIdSkillsSkill> characterSkills)
+        {
+            var skills = characterSkills.Select(x => new SerializableCharacterSkill
+            {
+                ID = x.SkillId.GetValueOrDefault(),
+                Name = StaticSkills.GetSkillByID(x.SkillId.GetValueOrDefault()).Name,
+                //This gets weird with alpha clones so we are just going to assume trained level
+                Level = x.TrainedSkillLevel.GetValueOrDefault(),
+                Skillpoints = x.SkillpointsInSkill.GetValueOrDefault(),
+            });
+            return skills;
+        }
+
 
         private decimal GetWalletBalance(int characterId, string dataSource, string accessToken)
         {
@@ -165,7 +236,6 @@ namespace EVEMon.Common.Models.EsiProviders
         private IEnumerable<SerializableEmploymentHistory> GetCorporationHistory(int characterId, string dataSource)
         {
             var corpHistory = _characterApi.GetCharactersCharacterIdCorporationhistory(characterId, dataSource);
-            //Ew casts
             var corpNameMapping =
                 GetCorpNames(corpHistory.Select(x => x.CorporationId).ToList(), dataSource);
             var history = corpHistory.Select(x => new SerializableEmploymentHistory

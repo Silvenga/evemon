@@ -34,7 +34,7 @@ namespace EVEMon.Common.Models.EsiProviders
                 Result = new SerializableAPIAccountStatus
                 {
                     CreateDate = characterInfo.Birthday.GetValueOrDefault(),
-                    PaidUntil = DateTime.MaxValue //Yup, esi doesnt have this info, so fake it
+                    //PaidUntil = DateTime.MaxValue //Dont set this because we dont know this info
                 }
             };
 
