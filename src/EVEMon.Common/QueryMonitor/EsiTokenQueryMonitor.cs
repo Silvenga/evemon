@@ -8,12 +8,12 @@ using IdentityModel.Client;
 
 namespace EVEMon.Common.QueryMonitor
 {
-    public class EsiTokenQueryMonitor : INetworkChangeSubscriber
+    public class EsiTokenQueryMonitor : INetworkChangeSubscriber, IDisposable
     {
         private readonly string _initialRefreshToken;
         private readonly Action<EsiTokenQueryUpdate> _onEsiTokenUpdate;
         private readonly TokenClient _client;
-        private EsiTokenQueryUpdate lastResult;
+        private EsiTokenQueryUpdate _lastResult;
 
         public bool SetNetworkStatus { get; set; }
 
@@ -23,7 +23,7 @@ namespace EVEMon.Common.QueryMonitor
 
         public DateTimeOffset NextUpdate
         {
-            get => (lastResult?.ExpiresAfter ?? DateTimeOffset.Now).AddMinutes(-5);
+            get => (_lastResult?.ExpiresAfter ?? DateTimeOffset.Now).AddMinutes(-5);
         }
 
         public DateTimeOffset LastUpdate { get; set; }
@@ -84,10 +84,15 @@ namespace EVEMon.Common.QueryMonitor
                 AccessToken = response.AccessToken,
                 ExpiresAfter = response.ExpiresIn.ToDateTimeOffsetFromEpoch()
             };
-            lastResult = update;
+            _lastResult = update;
             LastUpdate = DateTimeOffset.Now;
 
             _onEsiTokenUpdate(update);
+        }
+
+        public void Dispose()
+        {
+            EveMonClient.TimerTick -= EveMonClientOnTimerTick;
         }
     }
 
