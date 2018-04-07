@@ -206,6 +206,7 @@
     <Compile Include="Models\AccountStatus.cs" />
     <Compile Include="Models\EsiProviders\AccountStatusEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\ApiKeyInfoEsiProvider.cs" />
+    <Compile Include="Models\EsiProviders\CharacterSheetEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\SkillInTrainingEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\SkillQueueEsiProvider.cs" />
     <Compile Include="Models\EsiProviders\StandingsEsiProvider.cs" />

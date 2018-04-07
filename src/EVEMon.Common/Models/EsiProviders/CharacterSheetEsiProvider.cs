@@ -6,6 +6,7 @@ using EVEMon.Common.Collections;
 using EVEMon.Common.Constants;
 using EVEMon.Common.Data;
 using EVEMon.Common.Enumerations.CCPAPI;
+using EVEMon.Common.Serialization.Datafiles;
 using EVEMon.Common.Serialization.Eve;
 
 using IO.Swagger.Api;
@@ -13,35 +14,75 @@ using IO.Swagger.Model;
 
 namespace EVEMon.Common.Models.EsiProviders
 {
-    public class CharacterInfoEsiProvider : IEsiProvider<SerializableAPICharacterInfo>
+    public class CharacterSheetEsiProvider : IEsiProvider<SerializableAPICharacterSheet>
     {
         private readonly ICharacterApi _characterApi;
         private readonly ICorporationApi _corporationApi;
         private readonly ILocationApi _locationApi;
         private readonly IUniverseApi _universeApi;
+        private readonly IWalletApi _walletApi;
+        private readonly ISkillsApi _skillsApi;
+        private readonly IClonesApi _clonesApi;
 
-        public Enum Provides { get; } = CCPAPICharacterMethods.CharacterInfo;
 
-        public CharacterInfoEsiProvider()
+        public Enum Provides { get; } = CCPAPICharacterMethods.CharacterSheet;
+
+        public CharacterSheetEsiProvider()
         {
             _characterApi = new CharacterApi();
             _corporationApi = new CorporationApi();
             _locationApi = new LocationApi();
             _universeApi = new UniverseApi();
+            _walletApi = new WalletApi();
+            _skillsApi = new SkillsApi();
+            _clonesApi = new ClonesApi();
         }
 
-        public CCPAPIResult<SerializableAPICharacterInfo> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)
+        public CCPAPIResult<SerializableAPICharacterSheet> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)
         {
             var characterId = int.Parse(legacyPostData["characterID"]);
 
-            var result = new CCPAPIResult<SerializableAPICharacterInfo>
+            var characterInfo = _characterApi.GetCharactersCharacterId(characterId, dataSource);
+            var characterAttributes = _skillsApi.GetCharactersCharacterIdAttributes(characterId, dataSource, accessToken);
+            var characterClones = _clonesApi.GetCharactersCharacterIdClones(characterId, dataSource, accessToken);
+            
+
+
+            var result = new CCPAPIResult<SerializableAPICharacterSheet>
             {
-                Result = new SerializableAPICharacterInfo
+                Result = new SerializableAPICharacterSheet
                 {
+                    ID = characterId,
+                    Name = characterInfo.Name,
+                    Gender = characterInfo.Gender.ToString(),
+                    CorporationID = characterInfo.CorporationId.GetValueOrDefault(),
+                    //TODO: Corp Name
+                    Birthday = characterInfo.Birthday.GetValueOrDefault(),
+                    AllianceID = characterInfo.AllianceId.GetValueOrDefault(),
+                    //TODO: Alliance Name
+                    FactionID = characterInfo.FactionId.GetValueOrDefault(),
+                    //TODO: Faction Name
+                    Ancestry = GetAncestryName(characterInfo.AncestryId.GetValueOrDefault(), dataSource),
+                    BloodLine = GetBloodLineName(characterInfo.BloodlineId.GetValueOrDefault(), dataSource),
                     LastKnownLocation = GetCharacterLocation(characterId, dataSource, accessToken),
                     SecurityStatus = GetSecurityStatus(characterId, dataSource),
                     ShipName = GetShipName(characterId, dataSource, accessToken),
-                    ShipTypeName = GetShipTypeName(characterId, dataSource, accessToken)
+                    ShipTypeName = GetShipTypeName(characterId, dataSource, accessToken),
+                    Balance = GetWalletBalance(characterId, dataSource, accessToken),
+                    Attributes = new SerializableCharacterAttributes
+                    {
+                        Charisma = characterAttributes.Charisma.GetValueOrDefault(),
+                        Intelligence = characterAttributes.Intelligence.GetValueOrDefault(),
+                        Memory = characterAttributes.Memory.GetValueOrDefault(),
+                        Perception = characterAttributes.Perception.GetValueOrDefault(),
+                        Willpower = characterAttributes.Willpower.GetValueOrDefault()
+                    },
+                    FreeRespecs = (short) characterAttributes.BonusRemaps.GetValueOrDefault(),
+                    //We cant tell the difference here (possibly by checking accrued remap cooldowndate?)
+                    LastRespecDate = characterAttributes.LastRemapDate.GetValueOrDefault(),
+                    LastTimedRespec = characterAttributes.LastRemapDate.GetValueOrDefault(),
+                    
+                    
                 }
             };
 
@@ -49,7 +90,28 @@ namespace EVEMon.Common.Models.EsiProviders
             result.Result.EmploymentHistory.Clear();
             result.Result.EmploymentHistory.AddRange(GetCorporationHistory(characterId, dataSource));
 
+            //Not supported
+            result.Result.Certificates.Clear();
+
             return result;
+        }
+
+        private decimal GetWalletBalance(int characterId, string dataSource, string accessToken)
+        {
+            var result = _walletApi.GetCharactersCharacterIdWallet(characterId, dataSource, accessToken);
+            return (decimal) result.GetValueOrDefault();
+        }
+
+        private string GetBloodLineName(int bloodlineId, string dataSource)
+        {
+            var bloodlines = _universeApi.GetUniverseBloodlines(dataSource);
+            return bloodlines.Single(x => x.BloodlineId == bloodlineId).Name;
+        }
+
+        private string GetAncestryName(int ancestryId, string dataSource)
+        {
+            var bloodlines = _universeApi.GetUniverseAncestries(dataSource);
+            return bloodlines.Single(x => x.Id == ancestryId).Name;
         }
 
         private string GetCharacterLocation(int characterId, string dataSource, string accessToken)
@@ -93,18 +155,17 @@ namespace EVEMon.Common.Models.EsiProviders
             return ship == null || shipTypeId == 0 ? EveMonConstants.UnknownText : ship.Name;
         }
 
-        private IEnumerable<SerializableEmploymentHistoryListItem> GetCorporationHistory(int characterId, string dataSource)
+        private IEnumerable<SerializableEmploymentHistory> GetCorporationHistory(int characterId, string dataSource)
         {
             var corpHistory = _characterApi.GetCharactersCharacterIdCorporationhistory(characterId, dataSource);
+            //Ew casts
             var corpNameMapping =
                 GetCorpNames(corpHistory.Select(x => x.CorporationId).ToList(), dataSource);
-            var history = corpHistory.Select(x => new SerializableEmploymentHistoryListItem
+            var history = corpHistory.Select(x => new SerializableEmploymentHistory
             {
                 CorporationID = x.CorporationId.GetValueOrDefault(),
                 CorporationName = corpNameMapping[x.CorporationId.GetValueOrDefault()],
-                RecordID = x.RecordId.GetValueOrDefault(),
                 StartDate = x.StartDate.GetValueOrDefault(),
-
             });
             return history;
         }

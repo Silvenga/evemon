@@ -17,7 +17,7 @@ namespace EVEMon.Common.Models.EsiProviders
     {
         private readonly ICharacterApi _characterApi;
         private readonly ICorporationApi _corporationApi;
-        private readonly IAllianceApi _allianceApi;
+        private readonly IUniverseApi _universeApi;
 
         public Enum Provides { get; } = CCPAPICharacterMethods.Standings;
 
@@ -25,7 +25,7 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             _characterApi = new CharacterApi();
             _corporationApi = new CorporationApi();
-            _allianceApi = new AllianceApi();
+            _universeApi = new UniverseApi();
         }
 
         public CCPAPIResult<SerializableAPIStandings> Invoke(Dictionary<string, string> legacyPostData, string dataSource, string accessToken)
@@ -61,7 +61,6 @@ namespace EVEMon.Common.Models.EsiProviders
             var agentStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
             {
-                //TODO: name
                 Name = agentNameLookup[x.FromId.GetValueOrDefault()],
                 Group = StandingGroup.Agents,
                 ID = x.FromId.GetValueOrDefault(),
@@ -83,7 +82,6 @@ namespace EVEMon.Common.Models.EsiProviders
             var npCorpStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
                 {
-                    //TODO: name
                     Name = ncpCorpLookup[x.FromId.GetValueOrDefault()],
                     Group = StandingGroup.NPCCorporations,
                     ID = x.FromId.GetValueOrDefault(),
@@ -101,12 +99,11 @@ namespace EVEMon.Common.Models.EsiProviders
 
             //ew casts
             var factionLookup =
-                GetNpcCorpNames(filterdStandings.Select(x => x.FromId).ToList(), datasource);
+                GetNpcFactionNames(filterdStandings.Select(x => x.FromId.GetValueOrDefault()).ToList(), datasource);
 
             var factionStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
                 {
-                    //TODO: name
                     Name = factionLookup[x.FromId.GetValueOrDefault()],
                     Group = StandingGroup.Factions,
                     ID = x.FromId.GetValueOrDefault(),
@@ -161,25 +158,12 @@ namespace EVEMon.Common.Models.EsiProviders
         }
 
         //Yea apparently the universe api doesnt handle alliances that are factions?
-        private Dictionary<int, string> GetNpcFactionNames(List<int?> ids, string dataSource)
+        private Dictionary<int, string> GetNpcFactionNames(List<int> ids, string dataSource)
         {
-            //Endpoint maxes out at 1k ids passed
-            var chunkedIds = ids.ChunkBy(1000);
+            var factions = _universeApi.GetUniverseFactions(dataSource);
 
-            //TODO: dont like using swaggger classes
-            var names = new List<GetAlliancesNames200Ok>();
-
-            foreach (var chunk in chunkedIds)
-            {
-                var namesResult = _allianceApi.GetAlliancesNames(chunk, dataSource);
-
-                names.AddRange(namesResult);
-            }
-
-            return names
-                .Where(x => x.AllianceId.HasValue)
-                .ToDictionary(x => x.AllianceId.GetValueOrDefault(), x => x.AllianceName);
-
+            return factions.Where(x => ids.Contains(x.FactionId.GetValueOrDefault()))
+                .ToDictionary(x => x.FactionId.GetValueOrDefault(), x => x.Name);
         }
     }
 }
