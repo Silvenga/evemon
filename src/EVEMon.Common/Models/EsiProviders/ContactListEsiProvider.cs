@@ -19,7 +19,6 @@ namespace EVEMon.Common.Models.EsiProviders
     {
         private readonly IContactsApi _contactsApi;
         private readonly ICharacterApi _characterApi;
-        private readonly ICorporationApi _corporationApi;
         private readonly IUniverseApi _universeApi;
         private IDictionary<int, string> _factionNames;
 
@@ -29,7 +28,6 @@ namespace EVEMon.Common.Models.EsiProviders
         {
             _contactsApi = new ContactsApi();
             _characterApi = new CharacterApi();
-            _corporationApi = new CorporationApi();
             _universeApi = new UniverseApi();
         }
 
