@@ -19,6 +19,7 @@ namespace EVEMon.Common.Models.EsiProviders
                 new SkillInTrainingEsiProvider(),
                 new AccountStatusEsiProvider(),
                 new CharacterSheetEsiProvider(),
+                new ContactListEsiProvider(),
                 //CCPAPIGenericMethods
                 new ApiKeyInfoEsiProvider(),
                 new ServerStatusEsiProvider(),

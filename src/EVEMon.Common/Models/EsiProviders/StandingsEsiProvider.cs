@@ -49,14 +49,14 @@ namespace EVEMon.Common.Models.EsiProviders
             return result;
         }
 
-        private Collection<SerializableStandingsListItem> GetAgentStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string datasource)
+        private Collection<SerializableStandingsListItem> GetAgentStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string dataSource)
         {
             var filterdStandings = standings
                 .Where(x => x.FromType == GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Agent);
 
             //ew casts
             var agentNameLookup =
-                GetAgentNames(filterdStandings.Select(x => (long?) x.FromId).ToList(), datasource);
+                GetAgentNames(filterdStandings.Select(x => (long?) x.FromId).ToList(), dataSource);
 
             var agentStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
@@ -70,14 +70,14 @@ namespace EVEMon.Common.Models.EsiProviders
             return new Collection<SerializableStandingsListItem>(agentStandings);
         }
 
-        private Collection<SerializableStandingsListItem> GetNpcCorpStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string datasource)
+        private Collection<SerializableStandingsListItem> GetNpcCorpStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string dataSource)
         {
             var filterdStandings = standings
                 .Where(x => x.FromType == GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Npccorp);
 
             //ew casts
             var ncpCorpLookup =
-                GetNpcCorpNames(filterdStandings.Select(x => x.FromId).ToList(), datasource);
+                GetNpcCorpNames(filterdStandings.Select(x => x.FromId).ToList(), dataSource);
 
             var npCorpStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem
@@ -92,14 +92,14 @@ namespace EVEMon.Common.Models.EsiProviders
         }
 
 
-        private Collection<SerializableStandingsListItem> GetFactionStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string datasource)
+        private Collection<SerializableStandingsListItem> GetFactionStandings(List<GetCharactersCharacterIdStandings200Ok> standings, string dataSource)
         {
             var filterdStandings = standings
                 .Where(x => x.FromType == GetCharactersCharacterIdStandings200Ok.FromTypeEnum.Faction);
 
             //ew casts
             var factionLookup =
-                GetNpcFactionNames(filterdStandings.Select(x => x.FromId.GetValueOrDefault()).ToList(), datasource);
+                GetNpcFactionNames(filterdStandings.Select(x => x.FromId.GetValueOrDefault()).ToList(), dataSource);
 
             var factionStandings = filterdStandings
                 .Select(x => new SerializableStandingsListItem

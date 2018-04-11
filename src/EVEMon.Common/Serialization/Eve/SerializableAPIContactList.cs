@@ -10,9 +10,9 @@ namespace EVEMon.Common.Serialization.Eve
     /// </summary>
     public sealed class SerializableAPIContactList
     {
-        private readonly Collection<SerializableContactListItem> m_contacts;
-        private readonly Collection<SerializableContactListItem> m_corporateContacts;
-        private readonly Collection<SerializableContactListItem> m_allianceContacts;
+        private Collection<SerializableContactListItem> m_contacts;
+        private Collection<SerializableContactListItem> m_corporateContacts;
+        private Collection<SerializableContactListItem> m_allianceContacts;
 
         public SerializableAPIContactList()
         {
@@ -33,6 +33,7 @@ namespace EVEMon.Common.Serialization.Eve
                 }
                 return m_contacts;
             }
+            set => m_contacts = value;
         }
 
         [XmlArray("corporateContacts")]
@@ -47,6 +48,8 @@ namespace EVEMon.Common.Serialization.Eve
                 }
                 return m_corporateContacts;
             }
+            set => m_corporateContacts = value;
+
         }
 
         [XmlArray("allianceContacts")]
@@ -61,6 +64,7 @@ namespace EVEMon.Common.Serialization.Eve
                 }
                 return m_allianceContacts;
             }
+            set => m_allianceContacts = value;
         }
 
         [XmlIgnore]
